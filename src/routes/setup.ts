@@ -110,8 +110,9 @@ async function createUser(req: Request): Promise<{
     updatedAt: now,
   });
 
-  // Build the base URL
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  // Build the base URL (Cloud Run terminates TLS, so check forwarded proto)
+  const proto = req.get('x-forwarded-proto') || req.protocol;
+  const baseUrl = `${proto}://${req.get('host')}`;
 
   return {
     success: true,
