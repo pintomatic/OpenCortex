@@ -21,57 +21,47 @@ bootstrapRouter.get('/bootstrap', async (req: Request, res: Response) => {
     const userData = userDoc.exists ? userDoc.data()! : {};
 
     // Load memories in parallel
+    // Fetch all memories at once (no composite index needed), then filter in-memory
     const [
-      identitySnap,
-      decisionSnap,
-      preferenceSnap,
+      memoriesSnap,
       listsSnap,
-      taskSummarySnap,
-      upcomingSnap,
+      tasksSnap,
     ] = await Promise.all([
       db.collection('memories')
         .where('userId', '==', userId)
-        .where('category', '==', 'identity')
-        .orderBy('updatedAt', 'desc')
-        .limit(20)
-        .get(),
-      db.collection('memories')
-        .where('userId', '==', userId)
-        .where('category', '==', 'decision')
-        .orderBy('updatedAt', 'desc')
-        .limit(10)
-        .get(),
-      db.collection('memories')
-        .where('userId', '==', userId)
-        .where('category', '==', 'preference')
-        .orderBy('updatedAt', 'desc')
-        .limit(15)
         .get(),
       db.collection('lists')
         .where('userId', '==', userId)
-        .orderBy('createdAt', 'asc')
         .get(),
       db.collection('tasks')
         .where('userId', '==', userId)
-        .where('completed', '==', false)
-        .get(),
-      db.collection('tasks')
-        .where('userId', '==', userId)
-        .where('completed', '==', false)
         .get(),
     ]);
 
+    // Sort and filter memories in-memory (avoids composite index requirement)
+    const allMemories = memoriesSnap.docs.map((d) => d.data());
+    const byDate = (a: any, b: any) =>
+      (b.updatedAt || b.createdAt || '').localeCompare(a.updatedAt || a.createdAt || '');
+
+    const identitySnap = allMemories.filter((m) => m.category === 'identity').sort(byDate).slice(0, 20);
+    const decisionSnap = allMemories.filter((m) => m.category === 'decision').sort(byDate).slice(0, 10);
+    const preferenceSnap = allMemories.filter((m) => m.category === 'preference').sort(byDate).slice(0, 15);
+    const taskDocs = tasksSnap.docs.filter((d) => !d.data().completed);
+
     // Build identity facts
-    const identityFacts = identitySnap.docs.map((d) => d.data().content);
+    const identityFacts = identitySnap.map((m) => m.content);
 
     // Recent decisions
-    const recentDecisions = decisionSnap.docs.map((d) => d.data().content);
+    const recentDecisions = decisionSnap.map((m) => m.content);
 
     // Preferences
-    const preferences = preferenceSnap.docs.map((d) => d.data().content);
+    const preferences = preferenceSnap.map((m) => m.content);
 
-    // Lists
-    const lifeOsLists = listsSnap.docs.map((d) => d.data().name);
+    // Lists (sort in-memory)
+    const lifeOsLists = listsSnap.docs
+      .map((d) => d.data())
+      .sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''))
+      .map((d) => d.name);
 
     // Task summary
     const now = new Date();
@@ -84,7 +74,7 @@ bootstrapRouter.get('/bootstrap', async (req: Request, res: Response) => {
     let highPriority = 0;
     const activeTasks: any[] = [];
 
-    taskSummarySnap.docs.forEach((doc) => {
+    taskDocs.forEach((doc) => {
       const data = doc.data();
       total++;
       if (data.importance === 'high') highPriority++;
@@ -112,7 +102,8 @@ bootstrapRouter.get('/bootstrap', async (req: Request, res: Response) => {
 
     // Build bootstrap instructions
     const userName = userData.name || 'User';
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const proto = req.get('x-forwarded-proto') || req.protocol;
+    const baseUrl = `${proto}://${req.get('host')}`;
 
     const instructions = userData.instructions ||
       `You are an AI assistant for ${userName}. You have access to their Cortex — a personal knowledge system with memories, tasks, contacts, calendar, and email. Use the API endpoints to help them. Always be concise, warm, and proactive. When you learn something new about ${userName}, save it as a memory. When they mention a to-do, create a task.`;
