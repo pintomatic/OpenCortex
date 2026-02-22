@@ -1,7 +1,7 @@
 {
   "name": "cortex",
   "version": "1.0.0",
-  "description": "AI Chief of Staff — persistent memory, context, and agency for any AI frontend",
+  "description": "AI Chief of Staff — persistent memory, context, and agency for Claude",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",

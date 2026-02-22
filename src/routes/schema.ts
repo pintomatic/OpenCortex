@@ -12,7 +12,7 @@ const SCHEMA = {
     title: 'Cortex API',
     version: '1.0.0',
     description:
-      'AI Chief of Staff — persistent memory, tasks, CRM, and integrations for any AI frontend.',
+      'AI Chief of Staff — persistent memory, tasks, CRM, and integrations for Claude.',
   },
   servers: [{ url: '/api' }],
   paths: {

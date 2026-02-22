@@ -31,6 +31,9 @@ import { emailsRouter } from './routes/emails.js';
 // Setup (no auth — onboarding flow)
 import { setupRouter } from './routes/setup.js';
 
+// Admin (own auth — instance owner only)
+import { adminRouter } from './routes/admin.js';
+
 const app = express();
 const PORT = parseInt(process.env.PORT || '8080');
 
@@ -56,6 +59,9 @@ app.get('/', (_req, res) => {
 
 // Schema (no auth — AI needs to discover endpoints)
 app.use('/api', schemaRouter);
+
+// Admin (own auth via ADMIN_API_KEY — no user API key needed)
+app.use('/api', adminRouter);
 
 // All other routes require auth
 app.use('/api', authMiddleware);

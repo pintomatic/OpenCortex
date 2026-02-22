@@ -1,6 +1,6 @@
 {
   "name": "Cortex",
-  "description": "AI Chief of Staff — personal knowledge system for any AI frontend",
+  "description": "AI Chief of Staff — personal knowledge system for Claude",
   "env": {
     "FIREBASE_SERVICE_ACCOUNT": {
       "description": "Firebase service account JSON (from GCP Console > IAM > Service Accounts > Keys)",

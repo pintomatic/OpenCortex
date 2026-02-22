@@ -1,6 +1,6 @@
-# Connecting Cortex to Your AI
+# Connecting Cortex to Claude
 
-After running `/setup`, you'll get instructions to paste into your AI frontend. Here's how to set it up for each platform.
+After running `/setup`, you'll get instructions to paste into Claude. Here's how to set it up.
 
 ---
 
@@ -34,24 +34,7 @@ Follow the instructions in the JSON response.
 
 ---
 
-## ChatGPT
-
-1. Go to [chatgpt.com](https://chatgpt.com)
-2. Click your name → **Settings** → **Personalization** → **Custom Instructions**
-3. In "What would you like ChatGPT to know about you?", paste:
-
-```
-I have a personal knowledge system called Cortex. At the start of our conversation, please fetch my context from this URL and use it to help me:
-https://YOUR-CLOUD-RUN-URL/api/bootstrap?key=YOUR_API_KEY
-```
-
-*Note: ChatGPT may not always call the URL automatically. You can manually paste the bootstrap output.*
-
----
-
-## Any LLM with HTTP Access
-
-The pattern works with any AI that can make HTTP calls:
+## API Examples
 
 ```bash
 # Get full context
@@ -75,8 +58,8 @@ curl -X POST -H "Content-Type: application/json" \
 
 ## Tips
 
-- **Bootstrap runs at the start of every conversation** — your AI will always know your latest context
-- **Save memories during conversations** — when the AI learns something new about you, ask it to save it as a memory
+- **Bootstrap runs at the start of every conversation** — Claude will always know your latest context
+- **Save memories during conversations** — when Claude learns something new about you, ask it to save it as a memory
 - **Use task lists** — organize tasks into life domains (Work, Personal, Health, etc.)
-- **Meeting prep** — before any meeting, ask the AI to prepare using `/api/meeting-prep/:contactId`
+- **Meeting prep** — before any meeting, ask Claude to prepare using `/api/meeting-prep/:contactId`
 - **The more you use it, the better it gets** — memories compound over time

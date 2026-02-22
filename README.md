@@ -1,8 +1,8 @@
 # Cortex
 
-**AI Chief of Staff — persistent memory, tasks, CRM, and integrations for any AI frontend.**
+**AI Chief of Staff — persistent memory, tasks, CRM, and integrations for Claude.**
 
-Every AI conversation starts from zero. Cortex fixes that. It gives Claude, ChatGPT, or any LLM persistent knowledge about *your* world — who you are, what you're working on, who you know, what's on your calendar.
+Every Claude conversation starts from zero. Cortex fixes that. It gives Claude persistent knowledge about *your* world — who you are, what you're working on, who you know, what's on your calendar.
 
 You deploy it on your own Google Cloud. Your data never leaves your infrastructure.
 
@@ -62,7 +62,7 @@ That's it. Every new conversation will now know who you are.
 ## How It Works
 
 ```
-Your GCP Project                    AI Frontend
+Your GCP Project                    Claude
 ┌─────────────────────────┐        ┌──────────────┐
 │                         │        │              │
 │  Cloud Run (Cortex API) │◄──────►│  Claude.ai   │
@@ -71,7 +71,7 @@ Your GCP Project                    AI Frontend
 │                         │        │  Claude Code │
 │  Firestore              │        │  (via curl)  │
 │    memories, tasks,     │        │              │
-│    contacts, accounts   │        │  Any LLM     │
+│    contacts, accounts   │        │  Claude Code │
 │                         │        │              │
 │  Google OAuth (yours)   │        └──────────────┘
 │    Calendar + Gmail     │
@@ -126,6 +126,27 @@ You'll also need to enable these APIs in your project:
 | *... and more* | | See `/api/schema` for full list |
 
 Auth: API key via `?key=YOUR_KEY` or `x-api-key` header.
+
+### Admin Endpoints
+
+Manage users on your instance. Requires `ADMIN_API_KEY` environment variable.
+
+| Endpoint | Method | What it does |
+|----------|--------|-------------|
+| `/api/admin/users` | GET | List all users with stats |
+| `/api/admin/users/:userId` | GET | Detailed user info |
+| `/api/admin/users/:userId` | DELETE | Delete user and all data |
+
+Auth: `?admin_key=YOUR_ADMIN_KEY` or `x-admin-key` header.
+
+```bash
+# Set admin key on Cloud Run
+gcloud run services update open-cortex --region us-central1 \
+  --update-env-vars ADMIN_API_KEY=your_secret_admin_key
+
+# List all users
+curl "https://your-url/api/admin/users?admin_key=your_secret_admin_key"
+```
 
 ---
 

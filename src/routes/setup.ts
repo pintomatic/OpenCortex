@@ -263,7 +263,7 @@ function setupPage(): string {
       <div class="step">
         <span class="step-num">3</span>
         <span class="step-title">Start a conversation</span>
-        <div class="step-desc">Open a new Claude chat. It will automatically know your name and have access to your Cortex. Say "hi" and see the magic.</div>
+        <div class="step-desc">Open a new Claude chat. It will automatically know your name and have access to your Cortex. Say \\"hi\\" and watch Claude greet you by name.</div>
       </div>
     </div>
   </div>
