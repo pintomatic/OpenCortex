@@ -28,6 +28,9 @@ import { plansRouter } from './routes/plans.js';
 import { calendarRouter } from './routes/calendar.js';
 import { emailsRouter } from './routes/emails.js';
 
+// Setup (no auth — onboarding flow)
+import { setupRouter } from './routes/setup.js';
+
 const app = express();
 const PORT = parseInt(process.env.PORT || '8080');
 
@@ -41,6 +44,14 @@ initFirestore();
 // Health check (no auth)
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.0.0' });
+});
+
+// Setup page (no auth — onboarding)
+app.use(setupRouter);
+
+// Root redirect to setup
+app.get('/', (_req, res) => {
+  res.redirect('/setup');
 });
 
 // Schema (no auth — AI needs to discover endpoints)

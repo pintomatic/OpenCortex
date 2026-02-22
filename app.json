@@ -1,0 +1,21 @@
+{
+  "name": "Cortex",
+  "description": "AI Chief of Staff — personal knowledge system for any AI frontend",
+  "env": {
+    "FIREBASE_SERVICE_ACCOUNT": {
+      "description": "Firebase service account JSON (from GCP Console > IAM > Service Accounts > Keys)",
+      "required": true
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Google OAuth Client ID (for Calendar + Gmail — optional, can add later)",
+      "required": false
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "Google OAuth Client Secret (for Calendar + Gmail — optional, can add later)",
+      "required": false
+    }
+  },
+  "options": {
+    "allow-unauthenticated": true
+  }
+}
