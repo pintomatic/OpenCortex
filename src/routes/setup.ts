@@ -32,7 +32,13 @@ async function createUser(req: Request): Promise<{
   claudeInstructions: string;
 }> {
   const db = getDb();
-  const { name, email, lists: customLists, instructions } = req.body;
+  const { name, email, lists: customLists, instructions, accessCode } = req.body;
+
+  // Access code gate — only people with the code can sign up
+  const SIGNUP_ACCESS_CODE = process.env.SIGNUP_ACCESS_CODE || '';
+  if (SIGNUP_ACCESS_CODE && accessCode !== SIGNUP_ACCESS_CODE) {
+    throw { status: 403, error: 'Invalid access code', hint: 'Contact Andes to get your access code.' };
+  }
 
   if (!name || typeof name !== 'string' || !name.trim()) {
     throw { status: 400, error: 'Name is required', hint: 'Provide your full name.' };
