@@ -1,0 +1,29 @@
+{
+  "name": "cortex",
+  "version": "1.0.0",
+  "description": "AI Chief of Staff — persistent memory, context, and agency for any AI frontend",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.0",
+    "firebase-admin": "^12.7.0",
+    "googleapis": "^144.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
