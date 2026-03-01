@@ -13,6 +13,7 @@ import { randomBytes } from 'crypto';
 import { getDb } from '../services/firestore.js';
 import { DEFAULT_LISTS } from '../config/defaults.js';
 import { generateSkillTemplate } from '../config/skill-template.js';
+import { generateIntakePrompt } from '../config/intake-template.js';
 
 export const setupRouter = Router();
 
@@ -33,9 +34,10 @@ async function createUser(req: Request): Promise<{
   claudeInstructions: string;
   skillContent: string;
   skillFilename: string;
+  intakePrompt: string;
 }> {
   const db = getDb();
-  const { name, email, lists: customLists, instructions, accessCode } = req.body;
+  const { name, email, lists: customLists, instructions, accessCode, connectors } = req.body;
 
   // Access code gate — only people with the code can sign up
   const SIGNUP_ACCESS_CODE = process.env.SIGNUP_ACCESS_CODE || '';
@@ -122,7 +124,7 @@ async function createUser(req: Request): Promise<{
   const proto = req.get('x-forwarded-proto') || req.protocol;
   const baseUrl = `${proto}://${req.get('host')}`;
 
-  // Generate personalized skill file
+  // Generate personalized skill file (starter template)
   const skillContent = generateSkillTemplate({
     name: trimmedName,
     apiKey,
@@ -132,6 +134,16 @@ async function createUser(req: Request): Promise<{
 
   const skillFilename = `${firstName.toLowerCase()}-cortex-skill.md`;
 
+  // Generate intake prompt based on selected connectors
+  const userConnectors = Array.isArray(connectors) ? connectors : [];
+  const intakePrompt = generateIntakePrompt({
+    name: trimmedName,
+    apiKey,
+    baseUrl,
+    connectors: userConnectors,
+    lists: listNames,
+  });
+
   return {
     success: true,
     userId,
@@ -139,9 +151,10 @@ async function createUser(req: Request): Promise<{
     baseUrl,
     lists: listNames,
     bootstrapUrl: `${baseUrl}/api/bootstrap?key=${apiKey}`,
-    claudeInstructions: `At the start of every conversation, call this URL to load my context:\ncurl -s "${baseUrl}/api/bootstrap?key=${apiKey}"\nParse the JSON response. Follow the instructions field. Use the API endpoints listed to help me.`,
+    claudeInstructions: `My name is ${trimmedName}. I use a personal productivity API called Cortex. At the start of each conversation, please run:\ncurl -s "${baseUrl}/api/bootstrap?key=${apiKey}"\nand use the returned context to help me.`,
     skillContent,
     skillFilename,
+    intakePrompt,
   };
 }
 
