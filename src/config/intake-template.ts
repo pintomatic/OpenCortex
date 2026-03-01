@@ -64,12 +64,13 @@ export function generateIntakePrompt({
   }
 
   if (connectors.includes("chatgpt-export")) {
-    investigations.push(`**ChatGPT History** — I've uploaded my ChatGPT export (a zip file). Browse through my conversation history. Look for:
+    investigations.push(`**ChatGPT History** — I've exported my ChatGPT data (Settings → Data Controls → Export Data in ChatGPT) and uploaded the zip file to this conversation. Browse through my conversation history and look for:
   - Topics I frequently ask about — these reveal my interests and priorities
   - Decisions I've discussed or made
   - Projects I've been working on
   - Preferences and patterns in how I work
-  - People and companies mentioned frequently`);
+  - People and companies mentioned frequently
+  Note: This is an uploaded file, not a connected tool. Parse the conversations.json inside the zip.`);
   }
 
   if (connectors.includes("slack")) {
