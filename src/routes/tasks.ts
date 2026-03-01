@@ -24,8 +24,15 @@ tasksRouter.get('/tasks', async (req: Request, res: Response) => {
     if (completed !== undefined) query = query.where('completed', '==', completed === 'true');
     if (importance) query = query.where('importance', '==', importance);
 
-    const snapshot = await query.orderBy('createdAt', 'desc').limit(limit).get();
-    const tasks = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const snapshot = await query.get();
+    const tasks = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a: any, b: any) => {
+        const aTime = a.createdAt || '';
+        const bTime = b.createdAt || '';
+        return bTime > aTime ? 1 : bTime < aTime ? -1 : 0;
+      })
+      .slice(0, limit);
 
     res.json({ tasks, count: tasks.length });
   } catch (error) {
@@ -50,8 +57,6 @@ tasksRouter.get('/tasks/search', async (req: Request, res: Response) => {
       .collection('tasks')
       .where('userId', '==', userId)
       .where('completed', '==', false)
-      .orderBy('createdAt', 'desc')
-      .limit(200)
       .get();
 
     const searchTerms = q.toLowerCase().split(/\s+/);

@@ -18,10 +18,15 @@ listsRouter.get('/lists', async (req: Request, res: Response) => {
     const snapshot = await db
       .collection('lists')
       .where('userId', '==', userId)
-      .orderBy('createdAt', 'asc')
       .get();
 
-    const lists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const lists = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a: any, b: any) => {
+        const aTime = a.createdAt || '';
+        const bTime = b.createdAt || '';
+        return aTime > bTime ? 1 : aTime < bTime ? -1 : 0;
+      });
     res.json({ lists });
   } catch (error) {
     console.error('List list error:', error);
