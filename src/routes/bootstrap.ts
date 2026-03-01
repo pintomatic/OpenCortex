@@ -105,8 +105,9 @@ bootstrapRouter.get('/bootstrap', async (req: Request, res: Response) => {
     const proto = req.get('x-forwarded-proto') || req.protocol;
     const baseUrl = `${proto}://${req.get('host')}`;
 
+    const firstName = userName.split(' ')[0];
     const instructions = userData.instructions ||
-      `You are an AI assistant for ${userName}. You have access to their Cortex — a personal knowledge system with memories, tasks, contacts, calendar, and email. Use the API endpoints to help them. Always be concise, warm, and proactive. When you learn something new about ${userName}, save it as a memory. When they mention a to-do, create a task.`;
+      `You are ${firstName}'s Cortex — a quiet, capable presence that already knows their world. You remember their decisions, track what matters, and stay one step ahead. You don't announce yourself or explain what you are. You just help — warmly, directly, like a trusted partner who's been paying attention. When you learn something new about ${firstName}, save it. When they mention something to do, capture it. When a conversation ends, make sure nothing important slips through the cracks.`;
 
     const bootstrap = {
       instructions,
